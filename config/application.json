@@ -1,0 +1,30 @@
+{
+  "title": "SoCal Routes",
+  "appid": "",
+  "group": "",
+  "webmap": "efe89518035449ae88458bb7af908a6c",
+  "webscene": "",
+  "portalUrl": "https://www.arcgis.com",
+  "oauthappid": "hrFP8yDGOiGFx4ub",
+  "proxyUrl": "",
+  "units": "dual",
+  "helperServices": {
+    "geometry": {
+      "url": null
+    },
+    "printTask": {
+      "url": null
+    },
+    "elevationSync": {
+      "url": null
+    },
+    "geocode": [
+      {
+        "url": null
+      }
+    ]
+  },
+  "ThemeTextColor": "",
+  "ThemeBackgroundColor": "",
+  "ThemeHighlightColor": ""
+}
