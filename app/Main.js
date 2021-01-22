@@ -328,13 +328,14 @@ slides.forEach(slide => {
         routePathsLayer.load().then(() => {
           routePathsLayer.visible = false;
 
-          const individualsLayer = new AnimatedRouteLayer({
+          const animatedRoutesLayer = new AnimatedRouteLayer({
             title: `SoCal Routes`,
             trackIdField: routePathsLayer.objectIdField,
             startDateField: 'StartTimeUTC',
+            identifyEnabled: true,
             sourceLayer: routePathsLayer
           });
-          view.map.add(individualsLayer);
+          view.map.add(animatedRoutesLayer);
 
 
           // VIEW TIME SLIDER //

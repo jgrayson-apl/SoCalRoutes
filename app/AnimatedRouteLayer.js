@@ -14,36 +14,59 @@ define([
   "esri/core/promiseUtils",
   "esri/layers/Layer",
   "esri/layers/FeatureLayer",
+  "Application/AnimatedRouteRenderer",
   "Application/AnimatedRouteLayerView2D",
   "moment/moment"
 ], function(Color, Accessor, promiseUtils,
-            Layer, FeatureLayer, AnimatedRouteLayerView2D,
+            Layer, FeatureLayer,
+            AnimatedRouteRenderer, AnimatedRouteLayerView2D,
             moment){
 
-  const RouteLocationRenderer = Accessor.createSubclass({
+  /*const RouteLocationRenderer = Accessor.createSubclass({
     declaredClass: "AnnualCycleIndividualsRenderer",
 
     properties: {
-      birdSymbolType: {
+      type: {
         type: String
       },
-      birdColor: {
+      cutoffTime: {
+        type: Number
+      },
+      opacityAtCutoff: {
+        type: Number
+      },
+      color: {
         type: Color,
         set: function(value){
-          this._set('birdColor', new Color(value));
-          this.birdColorWGL = [
-            (this.birdColor.r / 255),
-            (this.birdColor.g / 255),
-            (this.birdColor.b / 255),
-            this.birdColor.a
+          this._set('color', new Color(value));
+          this.colorWGL = [
+            (this.color.r / 255),
+            (this.color.g / 255),
+            (this.color.b / 255),
+            this.color.a
           ];
         }
       },
-      birdColorWGL: {
+      colorWGL: {
         type: Array.of(Number)
       },
-      birdSize: {
+      size: {
         type: Number
+      },
+      invalidColor: {
+        type: Color,
+        set: function(value){
+          this._set('invalidColor', new Color(value));
+          this.invalidColorWGL = [
+            (this.invalidColor.r / 255),
+            (this.invalidColor.g / 255),
+            (this.invalidColor.b / 255),
+            this.invalidColor.a
+          ];
+        }
+      },
+      invalidColorWGL: {
+        type: Array.of(Number)
       },
       lineColor: {
         type: Color,
@@ -62,26 +85,22 @@ define([
       },
       lineWidth: {
         type: Number
-      },
-      cutoffTime: {
-        type: Number
-      },
-      opacityAtCutoff: {
-        type: Number
       }
     }
   });
-  RouteLocationRenderer.version = "0.0.1";
+  RouteLocationRenderer.version = "0.0.1";*/
 
-  RouteLocationRenderer.default = new RouteLocationRenderer({
-      birdSymbolType: 'circle',
-      birdColor: '#d9832e',
-      birdSize: 14,
-      lineColor: '#ffffff',
-      lineWidth: 8,
-      cutoffTime: (1000 * 60 * 3),  // 3 minutes //
-      opacityAtCutoff: 0.1
-    });
+  /*RouteLocationRenderer.default = new RouteLocationRenderer({
+    type: 'circle',
+    color: '#d9832e',
+    size: 15,
+    invalidColor: '#cccccc',
+    invalidSize: 4,
+    lineColor: '#ffff00',
+    lineWidth: 5,
+    cutoffTime: (1000 * 60 * 3),  // 3 minutes //
+    opacityAtCutoff: 0.1
+  });*/
 
 
   const AnimatedRouteLayer = Layer.createSubclass({
@@ -105,7 +124,7 @@ define([
         type: Map
       },
       renderer: {
-        type: RouteLocationRenderer
+        type: AnimatedRouteRenderer
       },
       identifyEnabled: {
         type: Boolean,
@@ -116,7 +135,30 @@ define([
      *
      */
     constructor: function(){
-      this.renderer = RouteLocationRenderer.default;
+
+      const defaultSymbol = {
+        type: 'circle',
+        cutoffTime: (1000 * 60 * 3),  // 3 minutes //
+        opacityAtCutoff: 0.1,
+        color: '#cccccc',
+        size: 5,
+        lineColor: '#dddddd',
+        lineWidth: 3
+      };
+
+      this.renderer = new AnimatedRouteRenderer();
+      this.renderer.registerAsset('circle', 'https://esri-audubon.s3-us-west-1.amazonaws.com/v1/apps/assets/textures/full-circle.png');
+      this.renderer.registerAsset('bird', 'https://esri-audubon.s3-us-west-1.amazonaws.com/v1/apps/assets/textures/full-circle.png');
+      this.renderer.setSymbol('default', {
+        ...defaultSymbol
+      });
+      this.renderer.setSymbol('moving', {
+        ...defaultSymbol,
+        color: '#d9832e',
+        size: 15,
+        lineColor: '#ffff00',
+        lineWidth: 5,
+      });
     },
 
     /**
@@ -211,8 +253,6 @@ define([
 
   });
   AnimatedRouteLayer.version = "0.0.1";
-
-
 
   return AnimatedRouteLayer;
 });
