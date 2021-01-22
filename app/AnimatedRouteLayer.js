@@ -22,87 +22,6 @@ define([
             AnimatedRouteRenderer, AnimatedRouteLayerView2D,
             moment){
 
-  /*const RouteLocationRenderer = Accessor.createSubclass({
-    declaredClass: "AnnualCycleIndividualsRenderer",
-
-    properties: {
-      type: {
-        type: String
-      },
-      cutoffTime: {
-        type: Number
-      },
-      opacityAtCutoff: {
-        type: Number
-      },
-      color: {
-        type: Color,
-        set: function(value){
-          this._set('color', new Color(value));
-          this.colorWGL = [
-            (this.color.r / 255),
-            (this.color.g / 255),
-            (this.color.b / 255),
-            this.color.a
-          ];
-        }
-      },
-      colorWGL: {
-        type: Array.of(Number)
-      },
-      size: {
-        type: Number
-      },
-      invalidColor: {
-        type: Color,
-        set: function(value){
-          this._set('invalidColor', new Color(value));
-          this.invalidColorWGL = [
-            (this.invalidColor.r / 255),
-            (this.invalidColor.g / 255),
-            (this.invalidColor.b / 255),
-            this.invalidColor.a
-          ];
-        }
-      },
-      invalidColorWGL: {
-        type: Array.of(Number)
-      },
-      lineColor: {
-        type: Color,
-        set: function(value){
-          this._set('lineColor', new Color(value));
-          this.lineColorWGL = [
-            (this.lineColor.r / 255),
-            (this.lineColor.g / 255),
-            (this.lineColor.b / 255),
-            this.lineColor.a
-          ];
-        }
-      },
-      lineColorWGL: {
-        type: Array.of(Number)
-      },
-      lineWidth: {
-        type: Number
-      }
-    }
-  });
-  RouteLocationRenderer.version = "0.0.1";*/
-
-  /*RouteLocationRenderer.default = new RouteLocationRenderer({
-    type: 'circle',
-    color: '#d9832e',
-    size: 15,
-    invalidColor: '#cccccc',
-    invalidSize: 4,
-    lineColor: '#ffff00',
-    lineWidth: 5,
-    cutoffTime: (1000 * 60 * 3),  // 3 minutes //
-    opacityAtCutoff: 0.1
-  });*/
-
-
   const AnimatedRouteLayer = Layer.createSubclass({
     declaredClass: "AnimatedRouteLayer",
 
@@ -146,9 +65,14 @@ define([
         lineWidth: 3
       };
 
+      // RENDERER //
       this.renderer = new AnimatedRouteRenderer();
-      this.renderer.registerAsset('circle', 'https://esri-audubon.s3-us-west-1.amazonaws.com/v1/apps/assets/textures/full-circle.png');
-      this.renderer.registerAsset('bird', 'https://esri-audubon.s3-us-west-1.amazonaws.com/v1/apps/assets/textures/full-circle.png');
+      // RENDERER ASSETS //
+      this.renderer.registerAssets([
+        ['circle', 'https://esri-audubon.s3-us-west-1.amazonaws.com/v1/apps/assets/textures/full-circle.png'],
+        ['bird', 'https://esri-audubon.s3-us-west-1.amazonaws.com/v1/apps/assets/textures/osprey.png']
+      ]);
+      // RENDERER SYMBOLS //
       this.renderer.setSymbol('default', {
         ...defaultSymbol
       });
@@ -195,6 +119,7 @@ define([
 
       // GET SOURCE FEATURES //
       this.getSourcesFeatures(this.sourceLayer).then(({ features }) => {
+        console.info('Source Feature Count: ', features.length);
 
         // SOURCE BY ID //
         const sourcesByID = features.reduce((list, feature) => {
@@ -206,6 +131,7 @@ define([
           // GET ALL COORDINATES //
           const coordinates = feature.geometry.paths.reduce((geomCoords, path) => {
             const pathCoords = path.map(coords => {
+              // CONVERT FROM MINUTES ALONG TO DATE VALUE //
               if(coords.length > 2){
                 coords[2] = alongToDateValue(startTimeMoment, coords[2]);
               } else {
@@ -228,6 +154,7 @@ define([
         }, new Map());
 
         // SORT COORDS BY TIME //
+        //  - IS THIS STILL NECESSARY?
         sourcesByID.forEach((sourcesInfo) => {
           sourcesInfo.geometry = sourcesInfo.geometry.sort((a, b) => {
             return (a[2] - b[2]);

@@ -52,6 +52,7 @@ define([
       this._audubon = new audubon.Audubon(this.context);
 
       watchUtils.whenDefinedOnce(this.layer, 'sources', sources => {
+        // IMAGE ASSETS //
         const imageAssets = this.layer.renderer.getImageAssets();
 
         sources.forEach((source) => {
@@ -68,7 +69,7 @@ define([
         this.initializeRenderer();
       });
 
-
+      // IDENTIFY //
       let viewClickHandle = null;
       watchUtils.init(this.layer, 'identifyEnabled', identifyEnabled => {
         if(identifyEnabled){
@@ -78,6 +79,7 @@ define([
         }
       });
 
+      // TIME EXTENT CHANGE //
       this.view.watch('timeExtent', timeExtent => {
         this.progress = timeExtent ? timeExtent.start.valueOf() : 0;
         this.requestRender();
@@ -113,10 +115,27 @@ define([
 
     },
 
-    updateRenderer: function(){
+    /*updateRenderer: function(){
       this.polylineInfos.forEach(polylineInfo => {
         this._updateRenderer(polylineInfo);
       });
+    },*/
+
+    /**
+     *
+     * @param clickEvt
+     */
+    identify: function(clickEvt){
+      clickEvt.preventDefault();
+
+      const marker = this._audubon.hitTest(clickEvt.x, clickEvt.y);
+      if(marker){
+        this.selection.push(marker.id);
+      } else {
+        this.selection.length = 0;
+      }
+      this.requestRender();
+      
     },
 
     /**
@@ -140,23 +159,6 @@ define([
 
       this._audubon.render(this, renderParams);
 
-    },
-
-    /**
-     *
-     * @param clickEvt
-     */
-    identify: function(clickEvt){
-      clickEvt.preventDefault();
-
-      const marker = this._audubon.hitTest(clickEvt.x, clickEvt.y);
-      if(marker){
-        this.selection.push(marker.id);
-      } else {
-        this.selection.length = 0;
-      }
-
-      this.requestRender();
     }
 
   });

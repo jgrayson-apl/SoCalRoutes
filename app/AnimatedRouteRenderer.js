@@ -100,8 +100,10 @@ define([
       this.symbols = new Map();
       this.selectionColor = 'cyan';
     },
-    registerAsset: function(assetName, assetURL){
-      this.assetInfos.set(assetName, { imageIndex: this.assetInfos.size, url: assetURL });
+    registerAssets: function(assets){
+      assets.forEach(asset => {
+        this.assetInfos.set(asset[0], { imageIndex: this.assetInfos.size, url: asset[1] });
+      });
     },
     getImageAssets: function(){
       return Array.from(this.assetInfos.values()).map(assetInfo => assetInfo.url);
