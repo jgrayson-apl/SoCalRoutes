@@ -14,6 +14,7 @@ define([
   "esri/views/2d/layers/BaseLayerViewGL2D"
 ], function(watchUtils, audubon, BaseLayerViewGL2D){
 
+  const PROGRESS_FACTOR = 100000;
 
   const AnimatedRouteLayerView2D = BaseLayerViewGL2D.createSubclass({
     declaredClass: "AnimatedRouteLayerView2D",
@@ -60,7 +61,7 @@ define([
           const marker = this._audubon.createMarker(imageAssets);
           marker.id = source.id;
 
-          const polyline = this._audubon.createPolyline(source.geometry);
+          const polyline = this._audubon.createPolyline(source.geometry.map(v => [v[0], v[1], v[2] / PROGRESS_FACTOR]));
           polyline.id = source.id;
 
           this.polylineInfos.push({ id: source.id, polyline: polyline, marker: marker });
@@ -103,7 +104,7 @@ define([
 
     _updateRenderer: function(polylineInfo){
 
-      if(polylineInfo.polyline.isWithinTimeExtent(this.progress)){
+      if(polylineInfo.polyline.isWithinTimeExtent(this.progress / PROGRESS_FACTOR)){
         this.renderer.updateInfo('moving', polylineInfo);
       } else {
         this.renderer.updateInfo('default', polylineInfo);
@@ -135,7 +136,7 @@ define([
         this.selection.length = 0;
       }
       this.requestRender();
-      
+
     },
 
     /**
@@ -147,12 +148,12 @@ define([
       this.polylineInfos.forEach(polylineInfo => {
 
         // MARKER //
-        const pos = polylineInfo.polyline.getPositionAtTime(this.progress);
+        const pos = polylineInfo.polyline.getPositionAtTime(this.progress / PROGRESS_FACTOR);
         polylineInfo.marker.position = pos.coords;
         polylineInfo.marker.angle = pos.angle;
 
         // POLYLINE //
-        polylineInfo.polyline.progress = this.progress;
+        polylineInfo.polyline.progress = this.progress / PROGRESS_FACTOR;
 
         this._updateRenderer(polylineInfo);
       });

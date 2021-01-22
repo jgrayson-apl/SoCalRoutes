@@ -58,7 +58,7 @@ define([
       const defaultSymbol = {
         type: 'circle',
         cutoffTime: (1000 * 60 * 3),  // 3 minutes //
-        opacityAtCutoff: 0.1,
+        opacityAtCutoff: 0.7,
         color: '#cccccc',
         size: 5,
         lineColor: '#dddddd',
