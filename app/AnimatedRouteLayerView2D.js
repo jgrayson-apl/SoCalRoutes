@@ -13,9 +13,7 @@ define([
   "addons/audubon",
   "esri/views/2d/layers/BaseLayerViewGL2D"
 ], function(watchUtils, audubon, BaseLayerViewGL2D){
-
-  const PROGRESS_FACTOR = 100000;
-
+      
   const AnimatedRouteLayerView2D = BaseLayerViewGL2D.createSubclass({
     declaredClass: "AnimatedRouteLayerView2D",
 
@@ -55,14 +53,16 @@ define([
       watchUtils.whenDefinedOnce(this.layer, 'sources', sources => {
         // IMAGE ASSETS //
         const imageAssets = this.layer.renderer.getImageAssets();
-
+                
         sources.forEach((source) => {
 
           const marker = this._audubon.createMarker(imageAssets);
           marker.id = source.id;
 
-          const polyline = this._audubon.createPolyline(source.geometry.map(v => [v[0], v[1], v[2] / PROGRESS_FACTOR]));
+          const polyline = this._audubon.createPolyline(source.geometry);
           polyline.id = source.id;
+
+          console.info(polyline.id, polyline.timeExtent);
 
           this.polylineInfos.push({ id: source.id, polyline: polyline, marker: marker });
 
@@ -80,9 +80,11 @@ define([
         }
       });
 
+      const layerStartDateValue = (this.layer.startDate.valueOf());
+
       // TIME EXTENT CHANGE //
       this.view.watch('timeExtent', timeExtent => {
-        this.progress = timeExtent ? timeExtent.start.valueOf() : 0;
+        this.progress = timeExtent ? ((timeExtent.start.valueOf() - layerStartDateValue) / 1000) : 0;
         this.requestRender();
       });
 
@@ -104,7 +106,7 @@ define([
 
     _updateRenderer: function(polylineInfo){
 
-      if(polylineInfo.polyline.isWithinTimeExtent(this.progress / PROGRESS_FACTOR)){
+      if(polylineInfo.polyline.isWithinTimeExtent(this.progress)){
         this.renderer.updateInfo('moving', polylineInfo);
       } else {
         this.renderer.updateInfo('default', polylineInfo);
@@ -148,12 +150,12 @@ define([
       this.polylineInfos.forEach(polylineInfo => {
 
         // MARKER //
-        const pos = polylineInfo.polyline.getPositionAtTime(this.progress / PROGRESS_FACTOR);
+        const pos = polylineInfo.polyline.getPositionAtTime(this.progress);
         polylineInfo.marker.position = pos.coords;
         polylineInfo.marker.angle = pos.angle;
 
         // POLYLINE //
-        polylineInfo.polyline.progress = this.progress / PROGRESS_FACTOR;
+        polylineInfo.polyline.progress = this.progress;
 
         this._updateRenderer(polylineInfo);
       });

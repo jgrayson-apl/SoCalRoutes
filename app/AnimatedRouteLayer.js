@@ -22,6 +22,7 @@ define([
             AnimatedRouteRenderer, AnimatedRouteLayerView2D,
             moment){
 
+
   const AnimatedRouteLayer = Layer.createSubclass({
     declaredClass: "AnimatedRouteLayer",
 
@@ -38,6 +39,9 @@ define([
           this._set('sourceLayer', value);
           this.initializeSources();
         }
+      },
+      startDate: {
+        aliasOf: 'sourceLayer.timeInfo.fullTimeExtent.start'
       },
       sources: {
         type: Map
@@ -57,8 +61,8 @@ define([
 
       const defaultSymbol = {
         type: 'circle',
-        cutoffTime: (1000 * 60 * 3),  // 3 minutes //
-        opacityAtCutoff: 0.7,
+        cutoffTime: 30.0,
+        opacityAtCutoff: 0.1,
         color: '#cccccc',
         size: 5,
         lineColor: '#dddddd',
@@ -111,15 +115,17 @@ define([
      */
     initializeSources: function(){
 
-      const MINUTES_TO_MILLISECONDS = (60 * 1000);
 
-      const alongToDateValue = (startTimeMoment, alongMinutes) => {
-        return startTimeMoment.clone().add((alongMinutes * MINUTES_TO_MILLISECONDS), 'milliseconds').toDate().valueOf();
-      };
+      // const alongToDateValue = (startTimeMoment, alongMinutes) => {
+      //   return startTimeMoment.clone().add((alongMinutes * MINUTES_TO_MILLISECONDS), 'milliseconds').toDate().valueOf();
+      // };
 
       // GET SOURCE FEATURES //
       this.getSourcesFeatures(this.sourceLayer).then(({ features }) => {
         console.info('Source Feature Count: ', features.length);
+
+        // LAYER START DATE 
+        const layerStartDateValue = (this.startDate.valueOf());
 
         // SOURCE BY ID //
         const sourcesByID = features.reduce((list, feature) => {
@@ -127,13 +133,14 @@ define([
           // SOURCE ID //
           const sourceId = feature.attributes[this.trackIdField];
           const startTimeMoment = moment.utc(feature.attributes[this.startDateField]);
+          const startOffset_seconds = (startTimeMoment.toDate().valueOf() - layerStartDateValue) / 1000;
 
           // GET ALL COORDINATES //
           const coordinates = feature.geometry.paths.reduce((geomCoords, path) => {
             const pathCoords = path.map(coords => {
               // CONVERT FROM MINUTES ALONG TO DATE VALUE //
               if(coords.length > 2){
-                coords[2] = alongToDateValue(startTimeMoment, coords[2]);
+                coords[2] = (startOffset_seconds + (coords[2] * 60));
               } else {
                 coords[2] = 0.0;
               }
