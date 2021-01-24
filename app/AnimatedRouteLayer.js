@@ -61,12 +61,12 @@ define([
 
       const defaultSymbol = {
         type: 'circle',
-        cutoffTime: 30.0,
-        opacityAtCutoff: 0.1,
+        size: 6,
         color: '#cccccc',
-        size: 5,
+        lineWidth: 4,
         lineColor: '#dddddd',
-        lineWidth: 3
+        cutoffTime: 120.0,
+        opacityAtCutoff: 0.7,
       };
 
       // RENDERER //
@@ -82,10 +82,9 @@ define([
       });
       this.renderer.setSymbol('moving', {
         ...defaultSymbol,
-        color: '#d9832e',
         size: 15,
-        lineColor: '#ffff00',
-        lineWidth: 5,
+        color: '#d9832e',
+        lineColor: '#ffff00'
       });
     },
 
