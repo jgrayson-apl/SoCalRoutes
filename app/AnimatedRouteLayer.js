@@ -65,7 +65,7 @@ define([
         color: '#cccccc',
         lineWidth: 4,
         lineColor: '#dddddd',
-        cutoffTime: 120.0,
+        cutoffTime: 120.0,  // 120 SECONDS //
         opacityAtCutoff: 0.7,
       };
 
