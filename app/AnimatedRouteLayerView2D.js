@@ -13,7 +13,7 @@ define([
   "addons/audubon",
   "esri/views/2d/layers/BaseLayerViewGL2D"
 ], function(watchUtils, audubon, BaseLayerViewGL2D){
-      
+
   const AnimatedRouteLayerView2D = BaseLayerViewGL2D.createSubclass({
     declaredClass: "AnimatedRouteLayerView2D",
 
@@ -53,7 +53,9 @@ define([
       watchUtils.whenDefinedOnce(this.layer, 'sources', sources => {
         // IMAGE ASSETS //
         const imageAssets = this.layer.renderer.getImageAssets();
-                
+
+        this.polylineInfos = [];
+
         sources.forEach((source) => {
 
           const marker = this._audubon.createMarker(imageAssets);
@@ -65,7 +67,6 @@ define([
           console.info(polyline.id, polyline.timeExtent);
 
           this.polylineInfos.push({ id: source.id, polyline: polyline, marker: marker });
-
         });
         this.initializeRenderer();
       });
@@ -84,6 +85,7 @@ define([
 
       // TIME EXTENT CHANGE //
       this.view.watch('timeExtent', timeExtent => {
+        // MILLISECONDS TO SECONDS //
         this.progress = timeExtent ? ((timeExtent.start.valueOf() - layerStartDateValue) / 1000) : 0;
         this.requestRender();
       });

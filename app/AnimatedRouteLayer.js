@@ -133,6 +133,7 @@ define([
           // SOURCE ID //
           const sourceId = feature.attributes[this.trackIdField];
           const startTimeMoment = moment.utc(feature.attributes[this.startDateField]);
+          // MILLISECONDS TO SECONDS //
           const startOffset_seconds = (startTimeMoment.toDate().valueOf() - layerStartDateValue) / 1000;
 
           // GET ALL COORDINATES //
@@ -140,6 +141,7 @@ define([
             const pathCoords = path.map(coords => {
               // CONVERT FROM MINUTES ALONG TO DATE VALUE //
               if(coords.length > 2){
+                // MINUTES TO SECONDS //
                 coords[2] = (startOffset_seconds + (coords[2] * 60));
               } else {
                 coords[2] = 0.0;
