@@ -30,7 +30,6 @@ define([
     MILLISECONDS_TO_HOURS: (1000 * 60 * 60)
   }
 
-
   const AnimatedRouteLayer = Layer.createSubclass({
     declaredClass: "AnimatedRouteLayer",
 

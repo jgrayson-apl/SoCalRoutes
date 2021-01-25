@@ -67,7 +67,7 @@ define([
           const polyline = this._audubon.createPolyline(source.geometry);
           polyline.id = source.id;
 
-          //console.info(polyline.id, polyline.timeExtent.start, polyline.timeExtent.end, (polyline.timeExtent.end - polyline.timeExtent.start));
+          console.info(polyline.id, polyline.timeExtent.start, polyline.timeExtent.end, (polyline.timeExtent.end - polyline.timeExtent.start));
 
           this.polylineInfos.push({ id: source.id, polyline: polyline, marker: marker });
         });
