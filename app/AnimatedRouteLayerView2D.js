@@ -26,6 +26,9 @@ define([
       progress: {
         type: Number
       },
+      progressConversionFactor: {
+        aliasOf: 'layer.progressConversionFactor'
+      },
       polylineInfos: {
         type: Array.of(Object)
       },
@@ -64,7 +67,7 @@ define([
           const polyline = this._audubon.createPolyline(source.geometry);
           polyline.id = source.id;
 
-          console.info(polyline.id, polyline.timeExtent.start, polyline.timeExtent.end, (polyline.timeExtent.end - polyline.timeExtent.start));
+          //console.info(polyline.id, polyline.timeExtent.start, polyline.timeExtent.end, (polyline.timeExtent.end - polyline.timeExtent.start));
 
           this.polylineInfos.push({ id: source.id, polyline: polyline, marker: marker });
         });
@@ -86,7 +89,7 @@ define([
       // TIME EXTENT CHANGE //
       this.view.watch('timeExtent', timeExtent => {
         // MILLISECONDS TO SECONDS //
-        this.progress = timeExtent ? ((timeExtent.start.valueOf() - layerStartDateValue) / 1000) : 0;
+        this.progress = timeExtent ? ((timeExtent.start.valueOf() - layerStartDateValue) / this.progressConversionFactor) : 0;
         console.info('PROGRESS: ', this.progress)
         this.requestRender();
       });

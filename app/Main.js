@@ -350,11 +350,11 @@ slides.forEach(slide => {
             this.timeSlider.set({
               loop: true,
               timeVisible: true,
-              playRate: 250,
+              playRate: 100,
               mode: "instant",
               fullTimeExtent: fullTimeExtent,
               values: [fullTimeExtent.start],
-              stops: { interval: { value: 10, unit: "seconds" } }
+              stops: { interval: { value: 30, unit: "seconds" } }
             });
 
           });

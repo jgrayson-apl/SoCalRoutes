@@ -22,6 +22,14 @@ define([
             AnimatedRouteRenderer, AnimatedRouteLayerView2D,
             moment){
 
+  const DATE_CONVERSION_FACTORS = {
+    MILLISECONDS_TO_SECONDS: 1000,
+    SECONDS_TO_MINUTES: 60,
+    MINUTES_TO_HOURS: 60,
+    MILLISECONDS_TO_MINUTES: (1000 * 60),
+    MILLISECONDS_TO_HOURS: (1000 * 60 * 60)
+  }
+
 
   const AnimatedRouteLayer = Layer.createSubclass({
     declaredClass: "AnimatedRouteLayer",
@@ -43,6 +51,10 @@ define([
       startDate: {
         aliasOf: 'sourceLayer.timeInfo.fullTimeExtent.start'
       },
+      progressConversionFactor: {
+        type: Number,
+        value: DATE_CONVERSION_FACTORS.MILLISECONDS_TO_HOURS
+      },
       sources: {
         type: Map
       },
@@ -63,9 +75,9 @@ define([
         type: 'circle',
         size: 6,
         color: '#cccccc',
-        lineWidth: 4,
+        lineWidth: 5,
         lineColor: '#dddddd',
-        cutoffTime: 120.0,  // 120 SECONDS //
+        cutoffTime: (DATE_CONVERSION_FACTORS.MINUTES_TO_HOURS / 5.0),
         opacityAtCutoff: 0.7,
       };
 
@@ -115,15 +127,11 @@ define([
     initializeSources: function(){
 
 
-      // const alongToDateValue = (startTimeMoment, alongMinutes) => {
-      //   return startTimeMoment.clone().add((alongMinutes * MINUTES_TO_MILLISECONDS), 'milliseconds').toDate().valueOf();
-      // };
-
       // GET SOURCE FEATURES //
       this.getSourcesFeatures(this.sourceLayer).then(({ features }) => {
         console.info('Source Feature Count: ', features.length);
 
-        // LAYER START DATE 
+        // LAYER START DATE
         const layerStartDateValue = (this.startDate.valueOf());
 
         // SOURCE BY ID //
@@ -132,16 +140,16 @@ define([
           // SOURCE ID //
           const sourceId = feature.attributes[this.trackIdField];
           const startTimeMoment = moment.utc(feature.attributes[this.startDateField]);
-          // MILLISECONDS TO SECONDS //
-          const startOffset_seconds = (startTimeMoment.toDate().valueOf() - layerStartDateValue) / 1000;
+          // START OFFSET - MILLISECONDS TO ... //
+          const startOffset = (startTimeMoment.toDate().valueOf() - layerStartDateValue) / this.progressConversionFactor;
 
           // GET ALL COORDINATES //
           const coordinates = feature.geometry.paths.reduce((geomCoords, path) => {
             const pathCoords = path.map(coords => {
-              // CONVERT FROM MINUTES ALONG TO DATE VALUE //
+              // CONVERT FROM MINUTES ALONG //
               if(coords.length > 2){
-                // MINUTES TO SECONDS //
-                coords[2] = (startOffset_seconds + (coords[2] * 60));
+                // MINUTES TO ... //
+                coords[2] = (startOffset + (coords[2] / DATE_CONVERSION_FACTORS.MINUTES_TO_HOURS));
               } else {
                 coords[2] = 0.0;
               }
