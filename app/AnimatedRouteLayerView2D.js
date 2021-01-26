@@ -106,7 +106,7 @@ define([
      */
     initializeRenderer: function(){
       this.polylineInfos.forEach(polylineInfo => {
-        this.renderer.initInfo('invalid', polylineInfo);
+        this.renderer.initInfo('default', polylineInfo);
       });
     },
 
@@ -162,7 +162,7 @@ define([
 
         // POLYLINE //
         polylineInfo.polyline.progress = this.progress;
-
+                
         this._updateRenderer(polylineInfo);
       });
 

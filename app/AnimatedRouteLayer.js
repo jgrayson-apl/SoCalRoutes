@@ -26,6 +26,7 @@ define([
     MILLISECONDS_TO_SECONDS: 1000,
     SECONDS_TO_MINUTES: 60,
     MINUTES_TO_HOURS: 60,
+    HOURS_TO_MINUTES: (1 / 60),
     MILLISECONDS_TO_MINUTES: (1000 * 60),
     MILLISECONDS_TO_HOURS: (1000 * 60 * 60)
   }
@@ -76,8 +77,8 @@ define([
         color: '#cccccc',
         lineWidth: 5,
         lineColor: '#dddddd',
-        cutoffTime: (DATE_CONVERSION_FACTORS.MINUTES_TO_HOURS / 5.0),
-        opacityAtCutoff: 0.7,
+        cutoffTime: (DATE_CONVERSION_FACTORS.HOURS_TO_MINUTES * 10.0),
+        opacityAtCutoff: 0.1,
       };
 
       // RENDERER //
