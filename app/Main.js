@@ -337,26 +337,19 @@ slides.forEach(slide => {
           });
           view.map.add(animatedRoutesLayer);
 
+          const fullTimeExtent = routePathsLayer.timeInfo.fullTimeExtent;
 
           // VIEW TIME SLIDER //
           this.timeSlider = new TimeSlider({
             container: 'time-slider-container',
-            view: view
-          });
-          this.timeSlider.when(() => {
-
-            const fullTimeExtent = routePathsLayer.timeInfo.fullTimeExtent;
-            
-            this.timeSlider.set({
-              loop: true,
-              timeVisible: true,
-              playRate: 10,
-              mode: "instant",
-              fullTimeExtent: fullTimeExtent,
-              values: [fullTimeExtent.start],
-              stops: { interval: { value: 10, unit: "seconds" } }
-            });
-
+            view: view,
+            loop: true,
+            timeVisible: true,
+            playRate: 10,
+            mode: "instant",
+            fullTimeExtent: fullTimeExtent,
+            values: [fullTimeExtent.start],
+            stops: { interval: { value: 10, unit: "seconds" } }
           });
 
           resolve();

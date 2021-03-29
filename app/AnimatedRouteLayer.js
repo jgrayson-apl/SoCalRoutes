@@ -73,7 +73,7 @@ define([
 
       const defaultSymbol = {
         type: 'circle',
-        size: 6,
+        size: 5,
         color: '#cccccc',
         lineWidth: 5,
         lineColor: '#dddddd',
@@ -85,6 +85,8 @@ define([
       this.renderer = new AnimatedRouteRenderer();
       // RENDERER ASSETS //
       this.renderer.registerAssets([
+        ['arrow', 'https://apl.esri.com/jg/SoCalRoutes/app/symbols/arrow.png'],
+        ['marker', 'https://apl.esri.com/jg/SoCalRoutes/app/symbols/marker.png'],
         ['circle', 'https://esri-audubon.s3-us-west-1.amazonaws.com/v1/apps/assets/textures/full-circle.png'],
         ['bird', 'https://esri-audubon.s3-us-west-1.amazonaws.com/v1/apps/assets/textures/osprey.png']
       ]);
@@ -94,7 +96,8 @@ define([
       });
       this.renderer.setSymbol('moving', {
         ...defaultSymbol,
-        size: 15,
+        type: 'arrow',
+        size: 16,
         color: '#d9832e',
         lineColor: '#ffff00'
       });
@@ -126,13 +129,12 @@ define([
      */
     initializeSources: function(){
 
-
       // GET SOURCE FEATURES //
       this.getSourcesFeatures(this.sourceLayer).then(({ features }) => {
         console.info('Source Feature Count: ', features.length);
 
-        // LAYER START DATE
-        const layerStartDateValue = (this.startDate.valueOf());
+        // LAYER START DATE VALUE //
+        const layerStartDateValue = this.startDate.valueOf();
 
         // SOURCE BY ID //
         const sourcesByID = features.reduce((list, feature) => {
@@ -163,7 +165,7 @@ define([
           if(sourceInfo){
             sourceInfo.geometry = sourceInfo.geometry.concat(coordinates);
           } else {
-            sourceInfo = { id: sourceId, geometry: coordinates };
+            sourceInfo = { id: sourceId, geometry: coordinates, attributes: feature.attributes };
           }
 
           return list.set(sourceId, sourceInfo);

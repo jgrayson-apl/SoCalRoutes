@@ -131,6 +131,7 @@ define([
       }
     },
     _update: function(symbol, polylineInfo){
+      polylineInfo.marker.imageIndex = this.assetInfos.get(symbol.type).imageIndex;
       polylineInfo.marker.size = symbol.size;
       polylineInfo.marker.color = symbol.colorWGL;
       polylineInfo.polyline.width = symbol.lineWidth;
